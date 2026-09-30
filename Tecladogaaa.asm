@@ -121,7 +121,9 @@ ISR_INICIO
     MOVWF   STATUS_TEMP
     ;------------------------------------
     ;---Identificación de Interrupción---
-    ;...			    
+    BTFSC INTCON,RBIF
+	GOTO ISR_IOC
+	GOTO ISR_FIN
     ;------------------------------------	
 		
 ;===============================================================================
@@ -132,6 +134,7 @@ ISR_FIN
     SWAPF   STATUS_TEMP, 0
     MOVWF   STATUS
     MOVWF   W_TEMP
+	GOTO MAIN_LOOP
     ;---------------------------------------- 	  
 	
 ;===============================================================================
@@ -143,9 +146,23 @@ ISR_FIN
 ; @details  Descripción específica de la subrutina.
 ;******************************************************************************* 
 SUBROUTINE
-    ;...
-    RETURN
 
+ISR_IOC
+	CALL KEY_READ
+	CALL TEST_KEYPAD
+	BCF INTCON,RBIF
+	GOTO ISR_FIN
+
+KEY_READ
+	CLRF KEYPAD_NUMBER
+	INCF KEYPAD_NUMBER
+	GOTO ACTIVE_ROW1
+
+TEST_KEYPAD
+	MOVFW KEYPAD_NUMBER
+	CALL TABLE_DECO_LEDS
+	MOVWF PORTD
+	RETURN
 ;===============================================================================		
     END
 ;===============================================================================
