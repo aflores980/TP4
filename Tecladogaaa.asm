@@ -200,6 +200,14 @@ LOOP_COL4
     BCF KEYPAD_ROW3
     BCF KEYPAD_ROW4
 RETURN
+
+RST_KEYPAD
+    CLRF KEYPAD_NUMBER
+    BCF KEYPAD_ROW1
+    BCF KEYPAD_ROW2
+    BCF KEYPAD_ROW3
+    BCF KEYPAD_ROW4
+RETURN
 ;===============================================================================		
     END
 ;===============================================================================
