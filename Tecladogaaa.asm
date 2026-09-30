@@ -255,15 +255,15 @@ RETURN
 ;===============================================================================
 TABLE_DECO_LEDS
     ADDWF   PCL, 1
-    RETLW	b'00000000'
-	RETLW   LED0
-    RETLW   LED1
-    RETLW   LED2
-    RETLW   LED3
-    RETLW   LED4
-    RETLW   LED5
-    RETLW   LED6
-    RETLW   LED7
+    RETLW	b'00000000' 
+	RETLW   b'00000001' ;LED0
+    RETLW   b'00000010'	;LED1
+    RETLW   b'00000100'	;LED2
+    RETLW   b'00001000'	;LED3
+    RETLW   b'00010000'	;LED4
+    RETLW   b'00100000'	;LED5
+    RETLW   b'01000000'	;LED6
+    RETLW   b'10000000'	;LED7
 
 ;===============================================================================		
     END
