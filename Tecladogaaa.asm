@@ -253,3 +253,22 @@ RETURN
     END
 ;===============================================================================
 ;asdakfajksd
+TABLE_CTRL_DSPL_CC
+    ADDWF   PCL, 1
+    RETLW   b'00000000'
+    RETLW   b'00000001'	    ;DISPLAY1
+    RETLW   b'00000010'	    ;DISPLAY2
+    RETLW   b'00000100'	    ;DISPLAY3
+
+TABLE_DECO_DSPL_CC
+    ADDWF   PCL, 1
+    RETLW   0x3F    ;0
+    RETLW   0x06    ;1
+    RETLW   0x5B    ;2
+    RETLW   0x4F    ;3
+    RETLW   0x66    ;4
+    RETLW   0x6D    ;5
+    RETLW   0x7D    ;6
+    RETLW   0x07    ;7
+    RETLW   0x7F    ;8
+    RETLW   0x67    ;9
