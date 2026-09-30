@@ -179,6 +179,24 @@ SCANN_COLS
 	INCF KEYPAD_NUMBER
 	CALL SCAN_ROWS		;PASA A ESCANEAR FILAS CUANDO TERMINA
 
+WAIT_RELEASE
+LOOP_COL1
+    BTFSS KEYPAD_COL1
+    GOTO LOOP_COL1
+LOOP_COL2
+    BTFSS KEYPAD_COL2
+    GOTO LOOP_COL2
+LOOP_COL3
+    BTFSS KEYPAD_COL3
+    GOTO LOOP_COL3
+LOOP_COL4
+    BTFSS KEYPAD_COL4
+    GOTO LOOP_COL4
+    BCF KEYPAD_ROW1
+    BCF KEYPAD_ROW2
+    BCF KEYPAD_ROW3
+    BCF KEYPAD_ROW4
+
 ;===============================================================================		
     END
 ;===============================================================================
