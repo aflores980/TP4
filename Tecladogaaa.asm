@@ -148,7 +148,38 @@ ISR_FIN
 ; @details  Descripción específica de la subrutina.
 ;******************************************************************************* 
 SUBROUTINE
-
+ACTIVE_ROW1
+    BCF     KEYPAD_ROW1
+    BSF	    KEYPAD_ROW2
+    BSF	    KEYPAD_ROW3
+    BSF	    KEYPAD_ROW4
+    GOTO    SCANN_COLS
+RETURN
+    
+ACTIVE_ROW2
+    BSF     KEYPAD_ROW1
+    BCF	    KEYPAD_ROW2
+    BSF	    KEYPAD_ROW3
+    BSF	    KEYPAD_ROW4
+    GOTO    SCANN_COLS
+RETURN
+    
+ACTIVE_ROW3
+    BSF     KEYPAD_ROW1
+    BSF	    KEYPAD_ROW2
+    BCF	    KEYPAD_ROW3
+    BSF	    KEYPAD_ROW4
+    GOTO    SCANN_COLS
+RETURN
+    
+ACTIVE_ROW4
+    BSF     KEYPAD_ROW1
+    BSF	    KEYPAD_ROW2
+    BSF	    KEYPAD_ROW3
+    BCF	    KEYPAD_ROW4
+    GOTO    SCANN_COLS
+RETURN
+    
 ISR_IOC
 	CALL KEY_READ
 	CALL TEST_KEYPAD
