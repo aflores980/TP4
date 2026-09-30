@@ -1,28 +1,28 @@
 ;===============================================================================
 ; @file       Gx_TPL4_ED2.asm
 ;
-; @author     Apellido_Nombre
+; @author URZAGASTI_SANTIAGO
 ;	      Apellido_Nombre
 ;	      Apellido_Nombre
 ;
-; @date       dia/mes/a駉
+; @date       dia/mes/a帽o
 ;
 ; @version    1.0
 ;===============================================================================
 
 ;===============================================================================
-; DIRECTIVAS DE INCLUSI覰
+; DIRECTIVAS DE INCLUSI脫N
 ;===============================================================================
 LIST P=16F887			
 #include "p16f887.inc"	
 	
 ;===============================================================================
-; CONFIGURACI覰 GENERAL DEL MCU
+; CONFIGURACI脫N GENERAL DEL MCU
 ;=============================================================================== 	
 __CONFIG _CONFIG1, _XT_OSC & _WDTE_OFF & _MCLRE_ON & _LVP_OFF
 
 ;===============================================================================
-; DEFINICI覰 DE CONSTANTES
+; DEFINICI脫N DE CONSTANTES
 ;===============================================================================     
     #DEFINE	    LED0    PORTD, 0
     #DEFINE	    LED1    PORTD, 1
@@ -42,7 +42,7 @@ __CONFIG _CONFIG1, _XT_OSC & _WDTE_OFF & _MCLRE_ON & _LVP_OFF
     #DEFINE	    KEYPAD_COL3	    PORTC, 6
     #DEFINE	    KEYPAD_COL4	    PORTC, 7
 ;===============================================================================
-; DEFINICI覰 DE VARIABLES
+; DEFINICI脫N DE VARIABLES
 ;=============================================================================== 
     
     ;Direcciones del banco 1
@@ -57,24 +57,52 @@ __CONFIG _CONFIG1, _XT_OSC & _WDTE_OFF & _MCLRE_ON & _LVP_OFF
     ENDC
     
 ;===============================================================================
-; DECLARACI覰 DE MACROS PARA CONFIGURACI覰 DE REGISTROS
+; DECLARACI脫N DE MACROS PARA CONFIGURACI脫N DE REGISTROS
 ;===============================================================================
+CFG_LEDS MACRO
+	BANKSEL ANSEL
+	CLRF ANSEL
+	CLRF ANSELH
 
+	BANKSEL TRISD
+	CLRF TRISD
+
+	BANKSEL PORTD
+	CLRF PORTD
+ENDM
+
+CFG_KEYPAD MACRO
+	BANKSEL TRISB
+	SETF TRISB
+
+	BANKSEL PORTB
+	SETF PORTB
+ENDM
+
+LEDS_OFF MACRO
+	BANKSEL PORTD
+	CLRF PORTD
+ENDM
+
+CFG_ISR
+	
 ;===============================================================================
-; INICIALIZACI覰 DEL MCU (C覦IGO ABSOLUTO)
+; INICIALIZACI脫N DEL MCU (C脫DIGO ABSOLUTO)
 ;===============================================================================    
     ORG     0x00	    ;Vector de Reset
     GOTO    INICIO	    ;Salto al inicio del programa principal
-    ORG     0x04	    ;Vector de Interrupci髇
-    GOTO    ISR_INICIO	    ;Salto al Rutina de Servicio de Interrupci髇
-    ORG     0x05	    ;Ubicaci髇 Programa Principal en la memoria 
+    ORG     0x04	    ;Vector de Interrupci贸n
+    GOTO    ISR_INICIO	    ;Salto al Rutina de Servicio de Interrupci贸n
+    ORG     0x05	    ;Ubicaci贸n Programa Principal en la memoria 
 			    ;de programa
 		
 ;===============================================================================
-; INICIALIZACI覰 DE MACROS PARA CONFIGURACI覰 DE REGISTROS
+; INICIALIZACI脫N DE MACROS PARA CONFIGURACI脫N DE REGISTROS
 ;===============================================================================    	    
-INICIO	    ;-----Inicializaci髇 de Macros-------
-
+INICIO	    ;-----Inicializaci贸n de Macros-------
+	CFG_LEDS
+	CFG_KEYPAD
+	CFG_ISR
 		
 ;===============================================================================
 ; INICIO PROGRAMA PRINCIPAL
@@ -84,7 +112,7 @@ MAIN_LOOP
     GOTO    MAIN_LOOP	
 
 ;===============================================================================
-; INICIALIZACI覰 DE RUTINAS DE SERVICIO DE INTERRUPCI覰
+; INICIALIZACI脫N DE RUTINAS DE SERVICIO DE INTERRUPCI脫N
 ;===============================================================================		    
 ISR_INICIO		
     ;--------Guardado de Contexto--------
@@ -92,15 +120,15 @@ ISR_INICIO
     SWAPF   STATUS, 0
     MOVWF   STATUS_TEMP
     ;------------------------------------
-    ;---Identificaci髇 de Interrupci髇---
+    ;---Identificaci贸n de Interrupci贸n---
     ;...			    
     ;------------------------------------	
 		
 ;===============================================================================
-; FINALIZACI覰 DE RUTINAS DE SERVICIO DE INTERRUPCI覰
+; FINALIZACI脫N DE RUTINAS DE SERVICIO DE INTERRUPCI脫N
 ;===============================================================================		    
 ISR_FIN			    
-    ;--------Restauraci髇 de Contexto--------        
+    ;--------Restauraci贸n de Contexto--------        
     SWAPF   STATUS_TEMP, 0
     MOVWF   STATUS
     MOVWF   W_TEMP
@@ -110,9 +138,9 @@ ISR_FIN
 ; SUBRUTINAS
 ;===============================================================================
 ;*******************************************************************************
-; @brief    Descripci髇 general de la subrutina.
+; @brief    Descripci贸n general de la subrutina.
 ;           
-; @details  Descripci髇 espec韋ica de la subrutina.
+; @details  Descripci贸n espec铆fica de la subrutina.
 ;******************************************************************************* 
 SUBROUTINE
     ;...
