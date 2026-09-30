@@ -33,14 +33,14 @@ __CONFIG _CONFIG1, _XT_OSC & _WDTE_OFF & _MCLRE_ON & _LVP_OFF
     #DEFINE	    LED6    PORTD, 6
     #DEFINE	    LED7    PORTD, 7
     
-    #DEFINE	    KEYPAD_ROW1	    PORTC, 0
-    #DEFINE	    KEYPAD_ROW2	    PORTC, 1
-    #DEFINE	    KEYPAD_ROW3	    PORTC, 2
-    #DEFINE	    KEYPAD_ROW4	    PORTC, 3
-    #DEFINE	    KEYPAD_COL1	    PORTC, 4
-    #DEFINE	    KEYPAD_COL2	    PORTC, 5
-    #DEFINE	    KEYPAD_COL3	    PORTC, 6
-    #DEFINE	    KEYPAD_COL4	    PORTC, 7
+    #DEFINE	    KEYPAD_ROW1	    PORTB, 0
+    #DEFINE	    KEYPAD_ROW2	    PORTB, 1
+    #DEFINE	    KEYPAD_ROW3	    PORTB, 2
+    #DEFINE	    KEYPAD_ROW4	    PORTB, 3
+    #DEFINE	    KEYPAD_COL1	    PORTB, 4
+    #DEFINE	    KEYPAD_COL2	    PORTB, 5
+    #DEFINE	    KEYPAD_COL3	    PORTB, 6
+    #DEFINE	    KEYPAD_COL4	    PORTB, 7
 ;===============================================================================
 ; DEFINICIÓN DE VARIABLES
 ;=============================================================================== 
@@ -60,46 +60,47 @@ __CONFIG _CONFIG1, _XT_OSC & _WDTE_OFF & _MCLRE_ON & _LVP_OFF
 ; DECLARACIÓN DE MACROS PARA CONFIGURACIÓN DE REGISTROS
 ;===============================================================================
 CFG_LEDS MACRO
-	BANKSEL ANSEL
-	CLRF ANSEL
-	CLRF ANSELH
+    BANKSEL ANSEL
+    CLRF    ANSEL
+    CLRF    ANSELH
 
-	BANKSEL TRISD
-	CLRF TRISD
+    BANKSEL TRISD
+    CLRF    TRISD
 
-	BANKSEL PORTD
-	CLRF PORTD
+    BANKSEL PORTD
+    CLRF    PORTD
 ENDM
 
 CFG_KEYPAD MACRO
     BANKSEL TRISB
-    MOVLW 0XFF
-    MOVWF TRISB
+    MOVLW   0XFF
+    MOVWF   TRISB
 
     BANKSEL PORTB
-    MOVLW 0XFF
-    MOVWF PORTB
+    MOVLW   0XFF
+    MOVWF   PORTB
 ENDM
 
 LEDS_OFF MACRO
-	BANKSEL PORTD
-	CLRF PORTD
+    BANKSEL PORTD
+    CLRF    PORTD
 ENDM
 
 CFG_ISR MACRO
     BANKSEL IOCB
-    MOVLW 0xFF
-    MOVWF IOCB
+    MOVLW   0xFF
+    MOVWF   IOCB
     
     BANKSEL INTCON
-    BCF INTCON,RBIF
-    BSF INTCON,RBIE
-    BSF INTCON,GIE
+    BCF	    INTCON,RBIF
+    BSF	    INTCON,RBIE
+    BSF	    INTCON,GIE
 ENDM
 	
 ;===============================================================================
 ; INICIALIZACIÓN DEL MCU (CÓDIGO ABSOLUTO)
 ;===============================================================================    
+    
     ORG     0x00	    ;Vector de Reset
     GOTO    INICIO	    ;Salto al inicio del programa principal
     ORG     0x04	    ;Vector de Interrupción
@@ -111,9 +112,9 @@ ENDM
 ; INICIALIZACIÓN DE MACROS PARA CONFIGURACIÓN DE REGISTROS
 ;===============================================================================    	    
 INICIO	    ;-----Inicialización de Macros-------
-	CFG_LEDS
-	CFG_KEYPAD
-	CFG_ISR
+    CFG_LEDS
+    CFG_KEYPAD
+    CFG_ISR
 		
 ;===============================================================================
 ; INICIO PROGRAMA PRINCIPAL
@@ -132,9 +133,9 @@ ISR_INICIO
     MOVWF   STATUS_TEMP
     ;------------------------------------
     ;---Identificación de Interrupción---
-    BTFSC INTCON,RBIF
-	GOTO ISR_IOC
-	GOTO ISR_FIN
+    BTFSC   INTCON,RBIF
+    GOTO    ISR_IOC
+    GOTO    ISR_FIN
     ;------------------------------------	
 		
 ;===============================================================================
@@ -144,8 +145,9 @@ ISR_FIN
     ;--------Restauración de Contexto--------        
     SWAPF   STATUS_TEMP, 0
     MOVWF   STATUS
-    MOVWF   W_TEMP
-	GOTO MAIN_LOOP
+    SWAPF   W_TEMP, 1
+    SWAPF   W_TEMP, 0
+    RETFIE
     ;---------------------------------------- 	  
 	
 ;===============================================================================
@@ -163,7 +165,6 @@ ACTIVE_ROW1
     BSF	    KEYPAD_ROW3
     BSF	    KEYPAD_ROW4
     GOTO    SCANN_COLS
-RETURN
     
 ACTIVE_ROW2
     BSF     KEYPAD_ROW1
@@ -171,7 +172,6 @@ ACTIVE_ROW2
     BSF	    KEYPAD_ROW3
     BSF	    KEYPAD_ROW4
     GOTO    SCANN_COLS
-RETURN
     
 ACTIVE_ROW3
     BSF     KEYPAD_ROW1
@@ -179,7 +179,6 @@ ACTIVE_ROW3
     BCF	    KEYPAD_ROW3
     BSF	    KEYPAD_ROW4
     GOTO    SCANN_COLS
-RETURN
     
 ACTIVE_ROW4
     BSF     KEYPAD_ROW1
@@ -187,76 +186,88 @@ ACTIVE_ROW4
     BSF	    KEYPAD_ROW3
     BCF	    KEYPAD_ROW4
     GOTO    SCANN_COLS
-RETURN
     
 ISR_IOC
-	CALL KEY_READ
-	CALL TEST_KEYPAD
-	BCF INTCON,RBIF
-	GOTO ISR_FIN
+    CALL    KEY_READ
+    CALL    TEST_KEYPAD
+    BCF	    INTCON,RBIF
+    GOTO    ISR_FIN
 
 KEY_READ
-	CLRF KEYPAD_NUMBER
-	INCF KEYPAD_NUMBER
-	GOTO ACTIVE_ROW1
+    CLRF    KEYPAD_NUMBER
+    INCF    KEYPAD_NUMBER
+    GOTO    ACTIVE_ROW1
 
 TEST_KEYPAD
-	LEDS_OFF
-	MOVFW KEYPAD_NUMBER
-	CALL TABLE_DECO_LEDS
-	MOVWF PORTD
-	RETURN
+    LEDS_OFF
+    MOVF    KEYPAD_NUMBER, 0
+    CALL    TABLE_DECO_LEDS
+    MOVWF   PORTD
+RETURN
 
 SCANN_COLS
-	BTFSS KEYPAD_COL1	;ESCANEO COLUMNA 1
-	GOTO WAIT_RELEASE
-	INCF KEYPAD_NUMBER
-	BTFSS KEYPAD_COL2	;ESCANEO COLUMNA 2
-	GOTO WAIT_RELEASE
-	INCF KEYPAD_NUMBER
-	BTFSS KEYPAD_COL3	;ESCANEO COLUMNA 3
-	GOTO WAIT_RELEASE
-	INCF KEYPAD_NUMBER
-	BTFSS KEYPAD_COL4	;ESCANEO COLUMNA 4
-	GOTO WAIT_RELEASE
-	INCF KEYPAD_NUMBER
-	GOTO SCAN_ROWS		;PASA A ESCANEAR FILAS CUANDO TERMINA
-	RETURN
+    BTFSS   KEYPAD_COL1	    ;ESCANEO COLUMNA 1
+    CALL    WAIT_RELEASE
+    INCF    KEYPAD_NUMBER, 1
+    BTFSS   KEYPAD_COL2	    ;ESCANEO COLUMNA 2
+    CALL    WAIT_RELEASE
+    INCF    KEYPAD_NUMBER, 1
+    BTFSS   KEYPAD_COL3	    ;ESCANEO COLUMNA 3
+    CALL    WAIT_RELEASE
+    INCF    KEYPAD_NUMBER, 1
+    BTFSS   KEYPAD_COL4	    ;ESCANEO COLUMNA 4
+    CALL    WAIT_RELEASE
+    INCF    KEYPAD_NUMBER, 1
+    CALL    SCANN_ROWS	    ;PASA A ESCANEAR FILAS CUANDO TERMINA
+RETURN
 
 WAIT_RELEASE
 LOOP_COL1
-    BTFSS KEYPAD_COL1
-    GOTO LOOP_COL1
+    BTFSS   KEYPAD_COL1
+    GOTO    LOOP_COL1
 LOOP_COL2
-    BTFSS KEYPAD_COL2
-    GOTO LOOP_COL2
+    BTFSS   KEYPAD_COL2
+    GOTO    LOOP_COL2
 LOOP_COL3
-    BTFSS KEYPAD_COL3
-    GOTO LOOP_COL3
+    BTFSS   KEYPAD_COL3
+    GOTO    LOOP_COL3
 LOOP_COL4
-    BTFSS KEYPAD_COL4
-    GOTO LOOP_COL4
-    BCF KEYPAD_ROW1
-    BCF KEYPAD_ROW2
-    BCF KEYPAD_ROW3
-    BCF KEYPAD_ROW4
+    BTFSS   KEYPAD_COL4
+    GOTO    LOOP_COL4
+    BCF	    KEYPAD_ROW1
+    BCF	    KEYPAD_ROW2
+    BCF	    KEYPAD_ROW3
+    BCF	    KEYPAD_ROW4
 RETURN
-
+    
+SCANN_ROWS
+    ;SCANN_ROW1
+    BTFSS   KEYPAD_ROW1
+    GOTO    ACTIVE_ROW2
+    ;SCANN_ROW2
+    BTFSS   KEYPAD_ROW2
+    GOTO    ACTIVE_ROW3
+    ;SCANN_ROW3
+    BTFSS   KEYPAD_ROW3
+    GOTO    ACTIVE_ROW4
+    GOTO    RST_KEYPAD
+RETURN
+    
 RST_KEYPAD
-    CLRF KEYPAD_NUMBER
-    BCF KEYPAD_ROW1
-    BCF KEYPAD_ROW2
-    BCF KEYPAD_ROW3
-    BCF KEYPAD_ROW4
+    CLRF    KEYPAD_NUMBER
+    BCF	    KEYPAD_ROW1
+    BCF	    KEYPAD_ROW2
+    BCF	    KEYPAD_ROW3
+    BCF	    KEYPAD_ROW4
 RETURN
 
 ;===============================================================================		
-	TABLAS
+;	    TABLAS
 ;===============================================================================
 TABLE_DECO_LEDS
     ADDWF   PCL, 1
-    RETLW	b'00000000' 
-	RETLW   b'00000001' ;LED0
+    RETLW   b'00000000' ;caso base
+    RETLW   b'00000001' ;LED0
     RETLW   b'00000010'	;LED1
     RETLW   b'00000100'	;LED2
     RETLW   b'00001000'	;LED3
@@ -266,6 +277,5 @@ TABLE_DECO_LEDS
     RETLW   b'10000000'	;LED7
 
 ;===============================================================================		
-    END
+END
 ;===============================================================================
-;asdakfajksd
