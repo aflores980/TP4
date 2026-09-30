@@ -86,7 +86,16 @@ LEDS_OFF MACRO
 	CLRF PORTD
 ENDM
 
-CFG_ISR
+CFG_ISR MACRO
+    BANKSEL IOCB
+    MOVLW 0xFF
+    MOVWF IOCB
+    
+    BANKSEL INTCON
+    BCF INTCON,RBIF
+    BSF INTCON,RBIE
+    BSF INTCON,GIE
+ENDM
 	
 ;===============================================================================
 ; INICIALIZACIÓN DEL MCU (CÓDIGO ABSOLUTO)
