@@ -158,11 +158,8 @@ KEY_READ
 	INCF KEYPAD_NUMBER
 	GOTO ACTIVE_ROW1
 
-TEST_KEYPAD
-	MOVFW KEYPAD_NUMBER
-	CALL TABLE_DECO_LEDS
-	MOVWF PORTD
-	RETURN
+
 ;===============================================================================		
     END
 ;===============================================================================
+;asdakfajksd
