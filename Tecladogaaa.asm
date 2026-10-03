@@ -272,15 +272,15 @@ RETURN
 ;===============================================================================
 TABLE_DECO_LEDS
     ADDWF   PCL, 1
-    RETLW   b'00000000' ;caso base
-    RETLW   b'00000001' ;LED0
-    RETLW   b'00000010'	;LED1
-    RETLW   b'00000100'	;LED2
-    RETLW   b'00001000'	;LED3
-    RETLW   b'00010000'	;LED4
-    RETLW   b'00100000'	;LED5
-    RETLW   b'01000000'	;LED6
-    RETLW   b'10000000'	;LED7
+    RETLW   b'00000000'         ; Caso 0: Sin tecla
+    RETLW   b'00000001'         ; Tecla (1,1) -> LED0
+    RETLW   b'00000010'         ; Tecla (1,2) -> LED1
+    RETLW   b'00000100'         ; Tecla (1,3) -> LED2
+    RETLW   b'00001000'         ; Tecla (1,4) -> LED3
+    RETLW   b'00010000'         ; Tecla (2,1) -> LED4
+    RETLW   b'00100000'         ; Tecla (2,2) -> LED5
+    RETLW   b'01000000'         ; Tecla (2,3) -> LED6
+    RETLW   b'10000000'         ; Tecla (2,4) -> LED7
 
 ;===============================================================================		
 END
