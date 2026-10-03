@@ -72,13 +72,19 @@ CFG_LEDS MACRO
 ENDM
 
 CFG_KEYPAD MACRO
+    BANKSEL OPTION_REG
+    BCF     OPTION_REG, NOT_RBPU ; Habilita pull-ups globales del PORTB
+
+    BANKSEL WPUB
+    MOVLW   0xF0
+    MOVWF   WPUB                ; Pull-ups habilitadas en columnas (RB4-RB7)
+
     BANKSEL TRISB
-    MOVLW   0XFF
+    MOVLW   0xF0                ; RB0-RB3 salidas (Filas), RB4-RB7 entradas (Columnas)
     MOVWF   TRISB
 
     BANKSEL PORTB
-    MOVLW   0XFF
-    MOVWF   PORTB
+    CLRF    PORTB               ; Salidas en nivel bajo por defecto
 ENDM
 
 LEDS_OFF MACRO
@@ -105,7 +111,7 @@ ENDM
     GOTO    INICIO	    ;Salto al inicio del programa principal
     ORG     0x04	    ;Vector de Interrupción
     GOTO    ISR_INICIO	    ;Salto al Rutina de Servicio de Interrupción
-    ORG     0x05	    ;Ubicación Programa Principal en la memoria 
+    ORG     0x05	    ;Ubicación Programwsa Principal en la memoria 
 			    ;de programa
 		
 ;===============================================================================
