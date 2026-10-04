@@ -147,7 +147,7 @@ KEY_READ
     GOTO    ACTIVE_ROW1
 
 ACTIVE_ROW1
-    BANKSEL PORTB               ; <--- AGREGADO: Garantiza la selección de banco correcta
+    BANKSEL PORTB               ; <--- AGREGADO: Garantiza la seleccion de banco correcta
     BCF     KEYPAD_ROW1
     BSF     KEYPAD_ROW2
     BSF     KEYPAD_ROW3
@@ -155,7 +155,7 @@ ACTIVE_ROW1
     GOTO    SCANN_COLS
 
 ACTIVE_ROW2
-    BANKSEL PORTB               ; <--- AGREGADO: Garantiza la selección de banco correcta
+    BANKSEL PORTB               ; <--- AGREGADO: Garantiza la seleccion de banco correcta
     BSF     KEYPAD_ROW1
     BCF     KEYPAD_ROW2
     BSF     KEYPAD_ROW3
@@ -163,7 +163,7 @@ ACTIVE_ROW2
     GOTO    SCANN_COLS
 
 ACTIVE_ROW3
-    BANKSEL PORTB               ; <--- AGREGADO: Garantiza la selección de banco correcta
+    BANKSEL PORTB               ; <--- AGREGADO: Garantiza la seleccion de banco correcta
     BSF     KEYPAD_ROW1
     BSF     KEYPAD_ROW2
     BCF     KEYPAD_ROW3
@@ -171,7 +171,7 @@ ACTIVE_ROW3
     GOTO    SCANN_COLS
 
 ACTIVE_ROW4
-    BANKSEL PORTB               ; <--- AGREGADO: Garantiza la selección de banco correcta
+    BANKSEL PORTB               ; <--- AGREGADO: Garantiza la seleccion de banco correcta
     BSF     KEYPAD_ROW1
     BSF     KEYPAD_ROW2
     BSF     KEYPAD_ROW3
@@ -179,28 +179,24 @@ ACTIVE_ROW4
     GOTO    SCANN_COLS
 
 SCANN_COLS
-    BANKSEL PORTB               ; <--- AGREGADO: Garantiza la selección de banco correcta
-    BTFSS   KEYPAD_COL1         ; ¿Columna 1 presionada (0)?
+    BANKSEL PORTB               ; <--- AGREGADO: Garantiza la seleccion de banco correcta
+    BTFSS   KEYPAD_COL1         ; Columna 1 presionada (0)?
     GOTO    KEY_FOUND           ; <--- MODIFICADO: Salta inmediatamente a detener el escaneo
     INCF    KEYPAD_NUMBER, F    ; <--- MODIFICADO: Solo incrementa si la columna NO estaba presionada
 
-    BTFSS   KEYPAD_COL2         ; ¿Columna 2 presionada (0)?
+    BTFSS   KEYPAD_COL2         ; Columna 2 presionada (0)?
     GOTO    KEY_FOUND           ; <--- MODIFICADO: Salta inmediatamente a detener el escaneo
     INCF    KEYPAD_NUMBER, F    ; <--- MODIFICADO: Solo incrementa si la columna NO estaba presionada
 
-    BTFSS   KEYPAD_COL3         ; ¿Columna 3 presionada (0)?
+    BTFSS   KEYPAD_COL3         ;Columna  3 presionada (0)?
     GOTO    KEY_FOUND           ; <--- MODIFICADO: Salta inmediatamente a detener el escaneo
     INCF    KEYPAD_NUMBER, F    ; <--- MODIFICADO: Solo incrementa si la columna NO estaba presionada
 
-    BTFSS   KEYPAD_COL4         ; ¿Columna 4 presionada (0)?
+    BTFSS   KEYPAD_COL4         ; Columna  4 presionada (0)?
     GOTO    KEY_FOUND           ; <--- MODIFICADO: Salta inmediatamente a detener el escaneo
     INCF    KEYPAD_NUMBER, F    ; <--- MODIFICADO: Solo incrementa si la columna NO estaba presionada
 
-    GOTO    SCANN_ROWS          ; Si no hubo pulsación en esta fila, pasa a activar la siguiente fila
-
-KEY_FOUND                       ; <--- AGREGADO: Punto de salida al hallar la tecla presionada
-    CALL    WAIT_RELEASE
-    RETURN                      ; <--- AGREGADO: Regresa a KEY_READ reteniendo el valor exacto en KEYPAD_NUMBER
+    GOTO    SCANN_ROWS          ; Si no hubo pulsacion en esta fila, pasa a activar la siguiente fila
 
 WAIT_RELEASE
 LOOP_COL1
