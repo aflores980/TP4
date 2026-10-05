@@ -181,19 +181,19 @@ ACTIVE_ROW4
 SCANN_COLS
     BANKSEL PORTB               ; <--- AGREGADO: Garantiza la seleccion de banco correcta
     BTFSS   KEYPAD_COL1         ; Columna 1 presionada (0)?
-    GOTO    KEY_FOUND           ; <--- MODIFICADO: Salta inmediatamente a detener el escaneo
+    GOTO    WAIT_RELEASE           ; <--- MODIFICADO: Salta inmediatamente a detener el escaneo
     INCF    KEYPAD_NUMBER, F    ; <--- MODIFICADO: Solo incrementa si la columna NO estaba presionada
 
     BTFSS   KEYPAD_COL2         ; Columna 2 presionada (0)?
-    GOTO    KEY_FOUND           ; <--- MODIFICADO: Salta inmediatamente a detener el escaneo
+    GOTO    WAIT_RELEASE           ; <--- MODIFICADO: Salta inmediatamente a detener el escaneo
     INCF    KEYPAD_NUMBER, F    ; <--- MODIFICADO: Solo incrementa si la columna NO estaba presionada
 
     BTFSS   KEYPAD_COL3         ;Columna  3 presionada (0)?
-    GOTO    KEY_FOUND           ; <--- MODIFICADO: Salta inmediatamente a detener el escaneo
+    GOTO    WAIT_RELEASE           ; <--- MODIFICADO: Salta inmediatamente a detener el escaneo
     INCF    KEYPAD_NUMBER, F    ; <--- MODIFICADO: Solo incrementa si la columna NO estaba presionada
 
     BTFSS   KEYPAD_COL4         ; Columna  4 presionada (0)?
-    GOTO    KEY_FOUND           ; <--- MODIFICADO: Salta inmediatamente a detener el escaneo
+    GOTO    WAIT_RELEASE           ; <--- MODIFICADO: Salta inmediatamente a detener el escaneo
     INCF    KEYPAD_NUMBER, F    ; <--- MODIFICADO: Solo incrementa si la columna NO estaba presionada
 
     GOTO    SCANN_ROWS          ; Si no hubo pulsacion en esta fila, pasa a activar la siguiente fila
