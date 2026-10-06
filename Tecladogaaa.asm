@@ -1,5 +1,5 @@
 ;===============================================================================
-; DIRECTIVAS DE INCLUSIÓN Y CONFIGURACIÓN
+; DIRECTIVAS DE INCLUSIÃ?N Y CONFIGURACIÃ?N
 ;===============================================================================
 LIST P=16F887			
 #include "p16f887.inc"	
@@ -7,7 +7,7 @@ LIST P=16F887
 __CONFIG _CONFIG1, _XT_OSC & _WDTE_OFF & _MCLRE_ON & _LVP_OFF
 
 ;===============================================================================
-; DEFINICIÓN DE CONSTANTES
+; DEFINICIÃ?N DE CONSTANTES
 ;===============================================================================     
     #DEFINE    LED0        PORTD, 0
     #DEFINE    LED1        PORTD, 1
@@ -28,7 +28,7 @@ __CONFIG _CONFIG1, _XT_OSC & _WDTE_OFF & _MCLRE_ON & _LVP_OFF
     #DEFINE    KEYPAD_COL4 PORTB, 7
 
 ;===============================================================================
-; DEFINICIÓN DE VARIABLES
+; DEFINICIÃ?N DE VARIABLES
 ;=============================================================================== 
     CBLOCK  0x20
         KEYPAD_NUMBER
@@ -40,7 +40,7 @@ __CONFIG _CONFIG1, _XT_OSC & _WDTE_OFF & _MCLRE_ON & _LVP_OFF
     ENDC
 
 ;===============================================================================
-; DECLARACIÓN DE MACROS
+; DECLARACIÃ?N DE MACROS
 ;===============================================================================
 CFG_LEDS MACRO
     BANKSEL ANSEL
@@ -78,11 +78,11 @@ ENDM
 
 CFG_ISR MACRO
     BANKSEL IOCB
-    MOVLW   b'11110000'         ; <--- MODIFICADO: (Antes 0xFF). Interrupción por cambio SOLO en Columnas (RB4..RB7)
+    MOVLW   b'11110000'         ; <--- MODIFICADO: (Antes 0xFF). InterrupciÃ³n por cambio SOLO en Columnas (RB4..RB7)
     MOVWF   IOCB
     
     BANKSEL PORTB
-    MOVF    PORTB, W            ; <--- AGREGADO: Lectura requerida de PORTB para limpiar la condición 'Mismatch'
+    MOVF    PORTB, W            ; <--- AGREGADO: Lectura requerida de PORTB para limpiar la condiciÃ³n 'Mismatch'
 
     BANKSEL INTCON
     BCF     INTCON, RBIF
@@ -91,7 +91,7 @@ CFG_ISR MACRO
 ENDM
 
 ;===============================================================================
-; VECTORES DE INICIO E INTERRUPCIÓN
+; VECTORES DE INICIO E INTERRUPCIÃ?N
 ;=============================================================================== 
     ORG     0x00
     GOTO    INICIO
@@ -112,7 +112,7 @@ MAIN_LOOP
     GOTO    MAIN_LOOP
 
 ;===============================================================================
-; RUTINA DE SERVICIO DE INTERRUPCIÓN (ISR)
+; RUTINA DE SERVICIO DE INTERRUPCIÃ?N (ISR)
 ;=============================================================================== 
 ISR_INICIO
     MOVWF   W_TEMP
@@ -125,7 +125,11 @@ ISR_INICIO
 
 ISR_IOC
     CALL    KEY_READ
-    CALL    TEST_KEYPAD
+    ; --- CORRECCIÓN PARA VIDA REAL ---
+    MOVF    KEYPAD_NUMBER, W    ; Evalúa el valor de KEYPAD_NUMBER
+    BTFSS   STATUS, Z           ; ¿Es 0 (evento al soltar o sin tecla)?
+    CALL    TEST_KEYPAD         ; Solo actualiza PORTD si se detectó una tecla válida (>0)
+    
     BANKSEL PORTB
     MOVF    PORTB, W            ; <--- AGREGADO: Lectura previa requerida antes de limpiar el flag RBIF
     BCF     INTCON, RBIF
@@ -184,19 +188,20 @@ SCANN_COLS
     GOTO    WAIT_RELEASE           ; <--- MODIFICADO: Salta inmediatamente a detener el escaneo
     INCF    KEYPAD_NUMBER, F    ; <--- MODIFICADO: Solo incrementa si la columna NO estaba presionada
 
-    BTFSS   KEYPAD_COL2         ; Columna 2 presionada (0)?
+    BTFSS   KEYPAD_COL2         ; Â¿Columna 2 presionada (0)?
     GOTO    WAIT_RELEASE           ; <--- MODIFICADO: Salta inmediatamente a detener el escaneo
     INCF    KEYPAD_NUMBER, F    ; <--- MODIFICADO: Solo incrementa si la columna NO estaba presionada
 
-    BTFSS   KEYPAD_COL3         ;Columna  3 presionada (0)?
+    BTFSS   KEYPAD_COL3         ; Â¿Columna 3 presionada (0)?
     GOTO    WAIT_RELEASE           ; <--- MODIFICADO: Salta inmediatamente a detener el escaneo
     INCF    KEYPAD_NUMBER, F    ; <--- MODIFICADO: Solo incrementa si la columna NO estaba presionada
 
-    BTFSS   KEYPAD_COL4         ; Columna  4 presionada (0)?
+    BTFSS   KEYPAD_COL4         ; Â¿Columna 4 presionada (0)?
     GOTO    WAIT_RELEASE           ; <--- MODIFICADO: Salta inmediatamente a detener el escaneo
     INCF    KEYPAD_NUMBER, F    ; <--- MODIFICADO: Solo incrementa si la columna NO estaba presionada
 
     GOTO    SCANN_ROWS          ; Si no hubo pulsacion en esta fila, pasa a activar la siguiente fila
+
 
 WAIT_RELEASE
 LOOP_COL1
@@ -221,7 +226,7 @@ LOOP_COL4
     RETURN
 
 SCANN_ROWS
-    BANKSEL PORTB               ; <--- AGREGADO: Garantiza la selección de banco correcta
+    BANKSEL PORTB               ; <--- AGREGADO: Garantiza la selecciÃ³n de banco correcta
     BTFSS   KEYPAD_ROW1         ; Si la Fila 1 era la activa (0)
     GOTO    ACTIVE_ROW2
     BTFSS   KEYPAD_ROW2         ; Si la Fila 2 era la activa (0)
@@ -240,13 +245,13 @@ RST_KEYPAD
     RETURN
 
 TEST_KEYPAD
-    LEDS_OFF
     ; --- BLOQUE AGREGADO PARA EVITAR DESBORDAMIENTO EN LA TABLA ---
-    MOVF    KEYPAD_NUMBER, W    ; <--- AGREGADO: Carga la tecla leída a W
+    MOVF    KEYPAD_NUMBER, W    ; <--- AGREGADO: Carga la tecla leida a W
     SUBLW   d'8'                ; <--- AGREGADO: Resta (8 - KEYPAD_NUMBER)
     BTFSS   STATUS, C           ; <--- AGREGADO: Si C=0, KEYPAD_NUMBER es mayor a 8 (filas 3 y 4)
     RETURN                      ; <--- AGREGADO: Sale sin consultar la tabla para no corromper la memoria
 
+    LEDS_OFF
     MOVF    KEYPAD_NUMBER, W
     CALL    TABLE_DECO_LEDS
     BANKSEL PORTD
@@ -254,10 +259,10 @@ TEST_KEYPAD
     RETURN
 
 ;===============================================================================
-; TABLA DE DECODIFICACIÓN
+; TABLA DE DECODIFICACIÃ?N
 ;===============================================================================
 TABLE_DECO_LEDS
-    ADDWF   PCL, F              ; <--- MODIFICADO: Especifica destino F explícito (PCL)
+    ADDWF   PCL, F              ; <--- MODIFICADO: Especifica destino F explicito (PCL)
     RETLW   b'00000000'         ; Caso 0: Sin tecla
     RETLW   b'00000001'         ; Tecla 1  (1,1) -> LED0
     RETLW   b'00000010'         ; Tecla 2  (1,2) -> LED1
